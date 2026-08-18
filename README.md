@@ -97,9 +97,11 @@ Em **Authentication > URL Configuration**:
   - `http://localhost:3000/auth/callback`
   - `https://SEU-APP.vercel.app/auth/callback`
 
-> O e-mail padrão do Supabase tem limite baixo de envio e cai em spam com
-> frequência. Para uso real, configure um SMTP dedicado em
-> **Project Settings > Authentication > SMTP Settings** (o Resend resolve bem).
+> O remetente padrão do Supabase serve só para teste: limite baixo de envio e
+> boa chance de cair em spam. Como e-mail de recuperação que não chega deixa a
+> pessoa presa fora da conta, configure um remetente dedicado seguindo
+> [`docs/email-smtp.md`](docs/email-smtp.md) — tem o caminho com domínio próprio
+> (Resend) e o caminho sem domínio (Gmail).
 
 ## 4. Pegar as chaves
 
