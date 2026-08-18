@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
         destination: '/app/relatorio/patrimonio',
         permanent: true,
       },
+      // a conta virou uma seção de Ajustes
+      { source: '/app/conta', destination: '/app/ajustes/conta', permanent: true },
     ]
   },
   async headers() {

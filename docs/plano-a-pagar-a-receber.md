@@ -523,6 +523,14 @@ que pagar esse mês". Vale subir para produção antes de G2 ficar pronta.
 
 ---
 
+### Já entregue, fora das fases
+
+A tela de preferências de aviso (**⋮ > Notificações**) e as colunas
+`notify_email`, `notify_time` e `notify_days_before` em `profiles` já estão no
+ar. Elas guardam o padrão que cada compromisso novo vai herdar, e a tela deixa
+explícito que nenhum e-mail sai enquanto a G2 não existir. Isso adianta parte da
+G1 e da G2 e dá onde plugar o envio quando ele chegar.
+
 ## 12. O que preciso de você antes de começar
 
 1. ~~Três abas ou quatro?~~ **Decidido: quatro**, com a Agenda ganhando aba

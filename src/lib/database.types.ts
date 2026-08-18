@@ -18,6 +18,9 @@ export type ProfileRow = {
   display_name: string | null
   timezone: string
   created_at: string
+  notify_email: boolean
+  notify_time: string
+  notify_days_before: number
 }
 
 export type CategoryRow = {

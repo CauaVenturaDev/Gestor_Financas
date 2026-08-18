@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
+import { temaAtual } from '@/lib/theme.server'
 import { MonthNav } from '@/components/MonthNav'
 import { SubNav } from '@/components/SubNav'
+import { MenuSistema } from '@/components/MenuSistema'
 import { AtalhosCartoes, TelaFaturas } from '@/components/cartoes/TelaFaturas'
 import { FabLink } from '@/components/ui/Fab'
 import { listBanks, listInvoice, normalizeYm } from '@/server/queries'
@@ -16,6 +18,8 @@ export default async function CartoesPage({
   const sp = await searchParams
   const ym = normalizeYm(sp.mes)
 
+  const tema = await temaAtual()
+
   const [fatura, bancos] = await Promise.all([
     listInvoice({ ym, bankId: sp.banco, status: sp.status, q: sp.q }),
     listBanks(),
@@ -25,7 +29,7 @@ export default async function CartoesPage({
     <div className="space-y-4 px-4 pt-3">
       <header className="sticky top-0 z-30 -mx-4 space-y-3 bg-bg/85 px-4 pb-3 pt-safe vidro sm:top-16">
         <MonthNav ym={ym} />
-        <SubNav itens={SUBNAV_CARTOES} />
+        <SubNav itens={SUBNAV_CARTOES} acao={<MenuSistema tema={tema} />} />
       </header>
 
       <AtalhosCartoes />

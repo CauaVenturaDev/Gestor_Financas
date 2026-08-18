@@ -22,7 +22,7 @@ export default async function EntrarPage({
         </p>
       )}
 
-      <FormEntrar proximo={proximo ?? '/app/movimentacoes'} />
+      <FormEntrar proximo={proximo ?? '/app/relatorio'} />
 
       <div className="mt-6 space-y-2 text-sm">
         <p>

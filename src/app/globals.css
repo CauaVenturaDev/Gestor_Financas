@@ -3,7 +3,16 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------- tokens --- */
-:root {
+/*
+ * Um tema é só um conjunto de tokens. Todo componente lê os tokens, nunca uma
+ * cor literal, então acrescentar um tema é acrescentar um bloco aqui.
+ *
+ * "Sistema" é a ausência de data-theme: aí quem decide é o prefers-color-scheme.
+ * Qualquer outro valor ganha do sistema operacional, nas duas direções.
+ */
+:root,
+[data-theme='claro'] {
+  color-scheme: light;
   --bg: 247 248 250;
   --surface: 255 255 255;
   --elevated: 255 255 255;
@@ -19,8 +28,28 @@
   --alerta: 178 96 8;
 }
 
+/* Claro de contraste menor, para uso prolongado e para tela em luz forte. */
+[data-theme='cinza'] {
+  color-scheme: light;
+  --bg: 235 238 243;
+  --surface: 253 253 255;
+  --elevated: 255 255 255;
+  --line: 213 219 229;
+  --ink: 24 29 39;
+  --muted: 88 98 116;
+  --faint: 133 143 161;
+  --brand: 32 71 195;
+  --brand-ink: 255 255 255;
+  --receita: 13 124 86;
+  --despesa: 187 44 58;
+  --investimento: 89 57 182;
+  --alerta: 166 89 7;
+}
+
+/* Escuro padrão: azulado, o mesmo que o app já usava. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
+    color-scheme: dark;
     --bg: 10 13 20;
     --surface: 20 25 35;
     --elevated: 27 33 45;
@@ -35,6 +64,77 @@
     --investimento: 172 146 255;
     --alerta: 240 176 74;
   }
+}
+
+[data-theme='escuro'] {
+  color-scheme: dark;
+  --bg: 10 13 20;
+  --surface: 20 25 35;
+  --elevated: 27 33 45;
+  --line: 43 51 66;
+  --ink: 236 240 246;
+  --muted: 154 165 184;
+  --faint: 116 128 148;
+  --brand: 116 152 255;
+  --brand-ink: 8 12 22;
+  --receita: 60 200 145;
+  --despesa: 255 118 130;
+  --investimento: 172 146 255;
+  --alerta: 240 176 74;
+}
+
+/* Escuro neutro, sem o viés azul. */
+[data-theme='grafite'] {
+  color-scheme: dark;
+  --bg: 18 18 19;
+  --surface: 29 29 31;
+  --elevated: 38 38 41;
+  --line: 57 57 61;
+  --ink: 235 235 237;
+  --muted: 161 161 167;
+  --faint: 123 123 130;
+  --brand: 141 167 255;
+  --brand-ink: 12 12 14;
+  --receita: 76 202 152;
+  --despesa: 255 124 130;
+  --investimento: 181 156 255;
+  --alerta: 237 178 82;
+}
+
+/* Preto puro: no OLED do iPhone o pixel apagado não consome bateria. */
+[data-theme='oled'] {
+  color-scheme: dark;
+  --bg: 0 0 0;
+  --surface: 12 12 14;
+  --elevated: 21 21 24;
+  --line: 44 44 49;
+  --ink: 242 242 246;
+  --muted: 158 158 166;
+  --faint: 118 118 127;
+  --brand: 124 158 255;
+  --brand-ink: 0 0 0;
+  --receita: 62 206 150;
+  --despesa: 255 118 128;
+  --investimento: 177 150 255;
+  --alerta: 242 180 78;
+}
+
+/* Noturno de contraste alto, com fundo índigo. */
+[data-theme='indigo'] {
+  color-scheme: dark;
+  --bg: 13 14 30;
+  --surface: 24 26 48;
+  --elevated: 33 35 61;
+  --line: 51 54 86;
+  --ink: 232 234 249;
+  --muted: 159 165 199;
+  --faint: 121 127 162;
+  --brand: 143 163 255;
+  --brand-ink: 10 11 24;
+  --receita: 76 208 162;
+  --despesa: 255 130 146;
+  --investimento: 189 163 255;
+  --alerta: 245 186 90;
 }
 
 /* ------------------------------------------------------------------ base --- */

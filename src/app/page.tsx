@@ -3,5 +3,5 @@ import { getUser } from '@/lib/supabase/server'
 
 export default async function Home() {
   const user = await getUser()
-  redirect(user ? '/app/movimentacoes' : '/entrar')
+  redirect(user ? '/app/relatorio' : '/entrar')
 }

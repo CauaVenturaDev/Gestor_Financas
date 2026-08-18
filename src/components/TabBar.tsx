@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation'
 import { ChartPie, CreditCard, Wallet } from 'lucide-react'
 
 const ABAS = [
-  { href: '/app/movimentacoes', rotulo: 'Lançamentos', Icone: Wallet },
   { href: '/app/relatorio', rotulo: 'Relatório', Icone: ChartPie },
+  { href: '/app/movimentacoes', rotulo: 'Lançamentos', Icone: Wallet },
   { href: '/app/cartoes', rotulo: 'Faturas', Icone: CreditCard },
 ]
 
@@ -48,7 +48,7 @@ export function TopNav({ nome }: { nome?: string | null }) {
   return (
     <header className="sticky top-0 z-40 hidden border-b border-line bg-surface/85 vidro sm:block">
       <div className="mx-auto flex h-16 max-w-5xl items-center gap-6 px-6">
-        <Link href="/app/movimentacoes" className="flex items-center gap-2 font-semibold">
+        <Link href="/app/relatorio" className="flex items-center gap-2 font-semibold">
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand text-brand-ink">
             <Wallet size={16} />
           </span>
@@ -72,7 +72,7 @@ export function TopNav({ nome }: { nome?: string | null }) {
           })}
         </nav>
         <Link
-          href="/app/conta"
+          href="/app/ajustes/conta"
           className="ml-auto truncate rounded-xl px-3 py-2 text-sm text-muted hover:bg-line/50"
         >
           {nome || 'Conta'}

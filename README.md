@@ -188,6 +188,20 @@ O `db-test.sh` sobe um Postgres 16 local com um shim mínimo do Supabase
 
 Os dois rodam dentro de `begin`/`rollback` e não deixam resíduo.
 
+## Temas e ajustes
+
+O app tem sete temas: **Sistema** (segue o aparelho), dois claros — Claro e
+Cinza — e quatro escuros — Escuro, Grafite, Preto puro e Índigo. Ficam em
+**⋮ > Aparência**, e o ⋮ está no canto do cabeçalho de qualquer aba.
+
+Um tema é só um conjunto de tokens em `src/app/globals.css`; todo componente lê
+os tokens, nunca uma cor literal, então acrescentar um tema é acrescentar um
+bloco `[data-theme='...']` lá e uma entrada em `src/lib/theme.ts`.
+
+A escolha vive num cookie, não no banco: assim o servidor já renderiza a página
+com a cor certa e o app nunca pisca branco antes de trocar. O preço é que o tema
+é por aparelho.
+
 ## Próximos passos
 
 - [`docs/plano-a-pagar-a-receber.md`](docs/plano-a-pagar-a-receber.md) — plano

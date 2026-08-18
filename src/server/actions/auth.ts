@@ -25,7 +25,7 @@ function traduzir(code: string | undefined, fallback: string): string {
 export async function signInAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const email = emailSchema.safeParse(formData.get('email'))
   const senha = String(formData.get('senha') ?? '')
-  const proximo = String(formData.get('proximo') ?? '/app/movimentacoes')
+  const proximo = String(formData.get('proximo') ?? '/app/relatorio')
 
   if (!email.success) return fail('VALIDATION', 'Confira os campos.', { email: 'E-mail inválido.' })
   if (!senha) return fail('VALIDATION', 'Confira os campos.', { senha: 'Informe a senha.' })
@@ -41,7 +41,7 @@ export async function signInAction(_prev: FormState, formData: FormData): Promis
   }
 
   revalidatePath('/', 'layout')
-  redirect(proximo.startsWith('/app') ? proximo : '/app/movimentacoes')
+  redirect(proximo.startsWith('/app') ? proximo : '/app/relatorio')
 }
 
 export async function signUpAction(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -62,7 +62,7 @@ export async function signUpAction(_prev: FormState, formData: FormData): Promis
     password: String(formData.get('senha')),
     options: {
       data: { display_name: nome },
-      emailRedirectTo: `${siteUrl()}/auth/callback?next=/app/movimentacoes`,
+      emailRedirectTo: `${siteUrl()}/auth/callback?next=/app/relatorio`,
     },
   })
 
@@ -76,7 +76,7 @@ export async function signUpAction(_prev: FormState, formData: FormData): Promis
   // Sem confirmação de e-mail o cadastro já devolve sessão: entra direto.
   if (data.session) {
     revalidatePath('/', 'layout')
-    redirect('/app/movimentacoes')
+    redirect('/app/relatorio')
   }
 
   return ok({
@@ -134,7 +134,7 @@ export async function updatePasswordAction(_prev: FormState, formData: FormData)
   await supabase.auth.signOut({ scope: 'others' })
 
   revalidatePath('/', 'layout')
-  redirect('/app/movimentacoes')
+  redirect('/app/relatorio')
 }
 
 export async function signOutAction(): Promise<void> {

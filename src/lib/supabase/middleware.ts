@@ -49,7 +49,7 @@ export async function updateSession(request: NextRequest) {
 
   if (user && isPublic && pathname !== '/redefinir-senha' && !pathname.startsWith('/auth')) {
     const url = request.nextUrl.clone()
-    url.pathname = '/app/movimentacoes'
+    url.pathname = '/app/relatorio'
     url.search = ''
     return NextResponse.redirect(url)
   }
