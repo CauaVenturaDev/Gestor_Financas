@@ -188,6 +188,11 @@ O `db-test.sh` sobe um Postgres 16 local com um shim mínimo do Supabase
 
 Os dois rodam dentro de `begin`/`rollback` e não deixam resíduo.
 
+## Próximos passos
+
+- [`docs/plano-a-pagar-a-receber.md`](docs/plano-a-pagar-a-receber.md) — plano
+  técnico da agenda de compromissos, com lembrete por e-mail e adiamento.
+
 ## O que está fora do MVP
 
 Multi-moeda, múltiplas contas bancárias, importação OFX/CSV, rendimento de
