@@ -103,13 +103,21 @@ Em **Authentication > URL Configuration**:
 
 ## 4. Pegar as chaves
 
-Em **Project Settings > API**, copie:
+O caminho curto é o botão **Connect**, no topo do painel: aba **App Frameworks
+> Next.js** mostra o bloco pronto para copiar, com os dois valores já nomeados.
 
-- **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
-- **anon public** (também chamada de *publishable key*) → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+Pelo menu, os dois ficam em lugares diferentes:
 
-A chave `service_role` **não é usada pelo app** e não deve ser colocada em
-variável `NEXT_PUBLIC_`. Ela nunca chega ao navegador.
+- **Settings > Data API** → **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
+- **Settings > API Keys** → **Publishable key** (`sb_publishable_...`) →
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+Projetos mais antigos mostram, no lugar da publishable key, a **anon public**
+(um JWT começando com `eyJ`). O app aceita os dois formatos na mesma variável.
+
+A **Secret key** (`sb_secret_...`, ou a antiga `service_role`) **não é usada
+pelo app**. Ela ignora a RLS e dá acesso aos dados de todos os usuários, então
+nunca deve entrar numa variável `NEXT_PUBLIC_` nem ser publicada.
 
 ## 5. Ligar o job diário (opcional, mas recomendado)
 
