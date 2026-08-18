@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------- tokens --- */
+:root {
+  --bg: 247 248 250;
+  --surface: 255 255 255;
+  --elevated: 255 255 255;
+  --line: 226 230 237;
+  --ink: 16 22 33;
+  --muted: 91 102 122;
+  --faint: 141 152 170;
+  --brand: 37 78 210;
+  --brand-ink: 255 255 255;
+  --receita: 14 133 92;
+  --despesa: 199 48 63;
+  --investimento: 96 62 194;
+  --alerta: 178 96 8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: 10 13 20;
+    --surface: 20 25 35;
+    --elevated: 27 33 45;
+    --line: 43 51 66;
+    --ink: 236 240 246;
+    --muted: 154 165 184;
+    --faint: 116 128 148;
+    --brand: 116 152 255;
+    --brand-ink: 8 12 22;
+    --receita: 60 200 145;
+    --despesa: 255 118 130;
+    --investimento: 172 146 255;
+    --alerta: 240 176 74;
+  }
+}
+
+/* ------------------------------------------------------------------ base --- */
+@layer base {
+  html {
+    /* 9. Safari não infla a fonte ao girar a tela */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg text-ink font-sans antialiased;
+    /* 8. o arraste não puxa a página de trás nem dispara o refresh por gesto */
+    overscroll-behavior-y: none;
+  }
+
+  /* 4. abaixo de 16px o Safari dá zoom ao focar e desalinha o layout */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* 10. sem atraso de 300ms e sem zoom por toque duplo */
+  button,
+  [role='button'],
+  a,
+  input,
+  select,
+  textarea,
+  label {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-bg;
+  }
+
+  /* 15. respeita quem pediu menos movimento */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ------------------------------------------------------------ componentes --- */
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-surface;
+  }
+
+  .campo {
+    @apply w-full rounded-xl border border-line bg-surface px-3 py-3 text-ink
+           placeholder:text-faint focus:border-brand focus:outline-none
+           focus:ring-2 focus:ring-brand/25 disabled:opacity-50;
+    min-height: 48px; /* alvo de toque de 44pt com folga */
+  }
+
+  .rotulo {
+    @apply mb-1.5 block text-sm font-medium text-muted;
+  }
+
+  .erro-campo {
+    @apply mt-1.5 block text-sm text-despesa;
+  }
+
+  /* alvo mínimo de toque de 44x44pt (padrão Apple) */
+  .toque {
+    @apply inline-flex items-center justify-center;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+}
+
+/* ---------------------------------------------------------------- utils --- */
+@layer utilities {
+  /* 3. 100vh puro no Safari iOS ignora a barra de endereço e corta o conteúdo */
+  .h-dvh {
+    height: 100vh;
+    height: -webkit-fill-available;
+    height: 100dvh;
+  }
+
+  .min-h-dvh {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    min-height: 100dvh;
+  }
+
+  /* 8. rolagem suave em iOS e sem "pull to refresh" dentro do painel */
+  .rolagem {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* 2. nada embaixo da barra de gestos nem do notch */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+  .px-safe {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+
+  .sem-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .sem-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .vidro {
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+  }
+}

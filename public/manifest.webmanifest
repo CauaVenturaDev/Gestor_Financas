@@ -1,0 +1,23 @@
+{
+  "name": "Gestor Financeiro",
+  "short_name": "Finanças",
+  "description": "Controle de receitas, despesas, investimentos e faturas de cartão.",
+  "start_url": "/app/movimentacoes",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f8fa",
+  "theme_color": "#254ed2",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["finance", "productivity"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Movimentações", "url": "/app/movimentacoes" },
+    { "name": "Faturas de cartão", "url": "/app/cartoes" }
+  ]
+}
