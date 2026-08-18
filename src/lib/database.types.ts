@@ -175,6 +175,10 @@ export interface Database {
       month_overview: { Args: { p_ym: string }; Returns: Json }
       patrimonio_mensal: { Args: Record<string, never>; Returns: Json }
       card_projection: { Args: { p_months: number }; Returns: Json }
+      category_breakdown: {
+        Args: { p_ym: string; p_incluir_previstos?: boolean }
+        Returns: Json
+      }
     }
     Enums: {
       kind_t: Kind

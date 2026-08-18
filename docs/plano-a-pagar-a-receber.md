@@ -337,15 +337,14 @@ daquele compromisso.
 
 ### Estrutura
 
-A barra inferior passa de duas para **três abas**: Movimentações, Faturas e
-**Agenda**. Dentro da Agenda, o alternador **A Pagar | A Receber**, no mesmo
-padrão do Realizado/Projetado que já existe.
+**Decidido.** A Agenda ganha aba própria na barra inferior, que fica com quatro:
+Lançamentos, Relatório, Faturas e **Agenda**. Dentro da Agenda, o alternador
+**A Pagar | A Receber**, no mesmo padrão do Realizado/Projetado.
 
-A alternativa seria criar duas abas separadas, uma para cada. Não recomendo:
-quatro abas em 375 px deixam cada alvo com 93 px, e as duas telas são a mesma
-tela com um filtro — separá-las dobra o código e obriga o usuário a trocar de aba
-para responder "o que tenho esse mês". Se você preferir as duas abas, o modelo de
-dados não muda; é só a navegação.
+A pilha de quatro abas deixa cada alvo com cerca de 93 px no iPhone SE, acima do
+mínimo de 44 pt, mas os rótulos passam a precisar de corte: eles já são truncados
+e a fonte da barra está em 11 px. Se um quinto item aparecer um dia, a barra não
+comporta e vira um menu.
 
 ```
 /app/agenda                   (calendário do mês, padrão: A Pagar)
@@ -526,8 +525,8 @@ que pagar esse mês". Vale subir para produção antes de G2 ficar pronta.
 
 ## 12. O que preciso de você antes de começar
 
-1. **Três abas ou quatro?** Recomendo três, com Agenda comportando A Pagar e A
-   Receber num alternador. Só a navegação muda entre as duas opções.
+1. ~~Três abas ou quatro?~~ **Decidido: quatro**, com a Agenda ganhando aba
+   própria na barra inferior.
 2. **Conta no Resend.** É pré-requisito de G2 e a mesma conta serve para os
    e-mails de recuperação de senha. Se você não tem domínio próprio, o caminho do
    Gmail em `docs/email-smtp.md` funciona para auth, mas **não** para os avisos:

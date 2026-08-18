@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { CreditCard, Wallet } from 'lucide-react'
+import { ChartPie, CreditCard, Wallet } from 'lucide-react'
 
 const ABAS = [
-  { href: '/app/movimentacoes', rotulo: 'Movimentações', Icone: Wallet },
+  { href: '/app/movimentacoes', rotulo: 'Lançamentos', Icone: Wallet },
+  { href: '/app/relatorio', rotulo: 'Relatório', Icone: ChartPie },
   { href: '/app/cartoes', rotulo: 'Faturas', Icone: CreditCard },
 ]
 
@@ -30,7 +31,7 @@ export function TabBar() {
                   transition-colors ${ativo ? 'text-brand' : 'text-faint active:text-muted'}`}
               >
                 <Icone size={22} strokeWidth={ativo ? 2.4 : 1.9} />
-                {rotulo}
+                <span className="max-w-full truncate px-0.5">{rotulo}</span>
               </Link>
             </li>
           )

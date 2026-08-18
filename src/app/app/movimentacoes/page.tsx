@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
 import { MonthNav } from '@/components/MonthNav'
 import { SubNav } from '@/components/SubNav'
-import { ResumoMes } from '@/components/movimentacoes/ResumoMes'
+import { ResumoCompacto } from '@/components/movimentacoes/ResumoCompacto'
 import { SecaoLancamentos } from '@/components/movimentacoes/SecaoLancamentos'
 import { Filtros } from '@/components/movimentacoes/Filtros'
 import { FabNovoLancamento } from '@/components/movimentacoes/FabNovoLancamento'
 import { getMonthOverview, listCategories, listTransactions, normalizeYm } from '@/server/queries'
 import { SUBNAV_MOVIMENTACOES } from '@/app/app/movimentacoes/subnav'
 
-export const metadata: Metadata = { title: 'Movimentações' }
+export const metadata: Metadata = { title: 'Lançamentos' }
 
 export default async function MovimentacoesPage({
   searchParams,
@@ -29,14 +29,14 @@ export default async function MovimentacoesPage({
   const por = (...kinds: string[]) => itens.filter((t) => kinds.includes(t.kind))
 
   return (
-    <div className="space-y-5 px-4 pt-3">
+    <div className="space-y-4 px-4 pt-3">
       {/* cabeçalho grudado no topo: o contexto do mês nunca some ao rolar */}
       <header className="sticky top-0 z-30 -mx-4 space-y-3 bg-bg/85 px-4 pb-3 pt-safe vidro sm:top-16">
         <MonthNav ym={ym} />
         <SubNav itens={SUBNAV_MOVIMENTACOES} />
       </header>
 
-      <ResumoMes overview={overview} />
+      <ResumoCompacto overview={overview} ym={ym} />
 
       <Filtros categorias={categorias} />
 

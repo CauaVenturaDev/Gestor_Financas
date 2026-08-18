@@ -19,10 +19,13 @@ const NATUREZA_DE: Record<string, Nature> = {
   resgate: 'investimento',
 }
 
+/**
+ * Revalida a árvore inteira de /app em vez de listar rota por rota: os mesmos
+ * números aparecem em telas diferentes, e uma lista de caminhos vira número
+ * velho em tela na primeira vez que alguém move uma rota.
+ */
 function revalidar() {
-  revalidatePath('/app/movimentacoes')
-  revalidatePath('/app/movimentacoes/patrimonio')
-  revalidatePath('/app/movimentacoes/recorrentes')
+  revalidatePath('/app', 'layout')
 }
 
 /**

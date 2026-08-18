@@ -6,9 +6,13 @@ import { type ActionResult, fail, fromPostgrest, ok } from '@/lib/result'
 import { categorySchema, fieldErrorsOf } from '@/lib/validation'
 import type { CategoryRow } from '@/lib/database.types'
 
+/**
+ * Revalida a árvore inteira de /app em vez de listar rota por rota: os mesmos
+ * números aparecem em telas diferentes, e uma lista de caminhos vira número
+ * velho em tela na primeira vez que alguém move uma rota.
+ */
 function revalidar() {
-  revalidatePath('/app/movimentacoes')
-  revalidatePath('/app/movimentacoes/categorias')
+  revalidatePath('/app', 'layout')
 }
 
 export async function createCategory(input: unknown): Promise<ActionResult<CategoryRow>> {

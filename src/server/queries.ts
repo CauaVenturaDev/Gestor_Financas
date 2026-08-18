@@ -361,6 +361,24 @@ export async function getProjection(monthsAhead = 12): Promise<ProjectionMonth[]
   return data as unknown as ProjectionMonth[]
 }
 
+export interface GrupoCategoria {
+  nome: string
+  totalCents: number
+}
+
+export type Breakdown = Partial<Record<Kind, GrupoCategoria[]>>
+
+/** Quebra por categoria do mês, para a aba Relatório. */
+export async function getCategoryBreakdown(ym: string, incluirPrevistos = false): Promise<Breakdown> {
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc('category_breakdown', {
+    p_ym: ymToFirstDay(ym),
+    p_incluir_previstos: incluirPrevistos,
+  })
+  if (error || !data) return {}
+  return data as unknown as Breakdown
+}
+
 export async function getProfile() {
   const supabase = await createClient()
   const { data: auth } = await supabase.auth.getUser()

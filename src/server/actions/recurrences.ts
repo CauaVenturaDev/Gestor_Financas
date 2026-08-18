@@ -7,9 +7,13 @@ import { createRecurrenceSchema, fieldErrorsOf, updateRecurrenceSchema } from '@
 import { addMonthsToYm, currentYm, todayISO, ymToFirstDay, ymToLastDay } from '@/lib/date'
 import type { Nature, RecurrenceRow } from '@/lib/database.types'
 
+/**
+ * Revalida a árvore inteira de /app em vez de listar rota por rota: os mesmos
+ * números aparecem em telas diferentes, e uma lista de caminhos vira número
+ * velho em tela na primeira vez que alguém move uma rota.
+ */
 function revalidar() {
-  revalidatePath('/app/movimentacoes')
-  revalidatePath('/app/movimentacoes/recorrentes')
+  revalidatePath('/app', 'layout')
 }
 
 const NATUREZA_DE: Record<string, Nature> = { receita: 'receita', despesa: 'despesa' }

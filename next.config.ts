@@ -5,6 +5,16 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: { bodySizeLimit: '1mb' },
   },
+  async redirects() {
+    return [
+      // o patrimônio saiu de Movimentações e passou para o Relatório
+      {
+        source: '/app/movimentacoes/patrimonio',
+        destination: '/app/relatorio/patrimonio',
+        permanent: true,
+      },
+    ]
+  },
   async headers() {
     return [
       {

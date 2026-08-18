@@ -7,11 +7,9 @@ import { createPurchaseSchema, fieldErrorsOf } from '@/lib/validation'
 import { isValidISODate } from '@/lib/date'
 import type { CardPurchaseRow } from '@/lib/database.types'
 
-function revalidar(purchaseId?: string) {
-  revalidatePath('/app/cartoes')
-  revalidatePath('/app/cartoes/projecao')
-  revalidatePath('/app/movimentacoes')
-  if (purchaseId) revalidatePath(`/app/cartoes/compra/${purchaseId}`)
+/** Ver a nota em transactions.ts: revalida a árvore toda, não rota por rota. */
+function revalidar() {
+  revalidatePath('/app', 'layout')
 }
 
 /** Motor de parcelamento: roda inteiro dentro de uma transação SQL (seção 5.2). */
@@ -104,7 +102,7 @@ export async function updatePurchase(
     if (error) return fromPostgrest(error)
   }
 
-  revalidar(id)
+  revalidar()
   return ok()
 }
 
@@ -118,7 +116,7 @@ export async function deletePurchase(id: string): Promise<ActionResult> {
   // as parcelas seguem a compra
   await supabase.from('card_installments').update({ deleted_at: agora }).eq('purchase_id', id)
 
-  revalidar(id)
+  revalidar()
   return ok()
 }
 
@@ -127,16 +125,14 @@ export async function payInstallment(id: string, paidAt: string): Promise<Action
     return fail('VALIDATION', 'Confira os campos.', { paidAt: 'Data inválida.' })
   }
   const supabase = await createClient()
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('card_installments')
     .update({ paid_at: paidAt })
     .eq('id', id)
     .is('deleted_at', null)
-    .select('purchase_id')
-    .maybeSingle()
 
   if (error) return fromPostgrest(error)
-  revalidar((data as { purchase_id: string } | null)?.purchase_id)
+  revalidar()
   return ok()
 }
 
@@ -158,7 +154,7 @@ export async function undoPayInstallment(id: string): Promise<ActionResult> {
     await supabase.from('card_purchases').update({ settled_at: null }).eq('id', purchaseId)
   }
 
-  revalidar(purchaseId)
+  revalidar()
   return ok()
 }
 
@@ -171,6 +167,6 @@ export async function settlePurchase(id: string, date: string): Promise<ActionRe
   const { data, error } = await supabase.rpc('settle_purchase', { p_purchase: id, p_date: date })
 
   if (error) return fromPostgrest(error)
-  revalidar(id)
+  revalidar()
   return ok({ paid: Number(data ?? 0) })
 }

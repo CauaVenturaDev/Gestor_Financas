@@ -6,10 +6,9 @@ import { type ActionResult, fail, fromPostgrest, ok } from '@/lib/result'
 import { bankSchema, fieldErrorsOf } from '@/lib/validation'
 import type { BankRow } from '@/lib/database.types'
 
+/** Ver a nota em transactions.ts: revalida a árvore toda, não rota por rota. */
 function revalidar() {
-  revalidatePath('/app/cartoes')
-  revalidatePath('/app/cartoes/bancos')
-  revalidatePath('/app/cartoes/projecao')
+  revalidatePath('/app', 'layout')
 }
 
 export async function createBank(input: unknown): Promise<ActionResult<BankRow>> {
