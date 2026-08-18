@@ -20,8 +20,13 @@
   --ink: 16 22 33;
   --muted: 91 102 122;
   --faint: 141 152 170;
-  --brand: 37 78 210;
-  --brand-ink: 255 255 255;
+  /* par da cor de destaque; o servidor sobrescreve os dois inline */
+  --brand-l: 37 78 210;
+  --brand-d: 116 152 255;
+  --brand-ink-l: 255 255 255;
+  --brand-ink-d: 10 13 20;
+  --brand: var(--brand-l);
+  --brand-ink: var(--brand-ink-l);
   --receita: 14 133 92;
   --despesa: 199 48 63;
   --investimento: 96 62 194;
@@ -38,8 +43,8 @@
   --ink: 24 29 39;
   --muted: 88 98 116;
   --faint: 133 143 161;
-  --brand: 32 71 195;
-  --brand-ink: 255 255 255;
+  --brand: var(--brand-l);
+  --brand-ink: var(--brand-ink-l);
   --receita: 13 124 86;
   --despesa: 187 44 58;
   --investimento: 89 57 182;
@@ -57,8 +62,8 @@
     --ink: 236 240 246;
     --muted: 154 165 184;
     --faint: 116 128 148;
-    --brand: 116 152 255;
-    --brand-ink: 8 12 22;
+    --brand: var(--brand-d);
+    --brand-ink: var(--brand-ink-d);
     --receita: 60 200 145;
     --despesa: 255 118 130;
     --investimento: 172 146 255;
@@ -75,8 +80,8 @@
   --ink: 236 240 246;
   --muted: 154 165 184;
   --faint: 116 128 148;
-  --brand: 116 152 255;
-  --brand-ink: 8 12 22;
+  --brand: var(--brand-d);
+  --brand-ink: var(--brand-ink-d);
   --receita: 60 200 145;
   --despesa: 255 118 130;
   --investimento: 172 146 255;
@@ -93,8 +98,8 @@
   --ink: 235 235 237;
   --muted: 161 161 167;
   --faint: 123 123 130;
-  --brand: 141 167 255;
-  --brand-ink: 12 12 14;
+  --brand: var(--brand-d);
+  --brand-ink: var(--brand-ink-d);
   --receita: 76 202 152;
   --despesa: 255 124 130;
   --investimento: 181 156 255;
@@ -111,8 +116,8 @@
   --ink: 242 242 246;
   --muted: 158 158 166;
   --faint: 118 118 127;
-  --brand: 124 158 255;
-  --brand-ink: 0 0 0;
+  --brand: var(--brand-d);
+  --brand-ink: var(--brand-ink-d);
   --receita: 62 206 150;
   --despesa: 255 118 128;
   --investimento: 177 150 255;
@@ -129,12 +134,70 @@
   --ink: 232 234 249;
   --muted: 159 165 199;
   --faint: 121 127 162;
-  --brand: 143 163 255;
-  --brand-ink: 10 11 24;
+  --brand: var(--brand-d);
+  --brand-ink: var(--brand-ink-d);
   --receita: 76 208 162;
   --despesa: 255 130 146;
   --investimento: 189 163 255;
   --alerta: 245 186 90;
+}
+
+/* ----------------------------------------------------------------- fundo --- */
+/*
+ * O fundo é uma camada de imagem no próprio body, não um pseudo-elemento fixo:
+ * assim não cria contexto de empilhamento e não briga com a barra inferior,
+ * com o FAB nem com os painéis. Todas usam a cor de destaque escolhida.
+ */
+[data-fundo='gradiente'] body {
+  background-image: linear-gradient(180deg, rgb(var(--brand) / 0.14), rgb(var(--brand) / 0));
+  background-repeat: no-repeat;
+  background-size: 100% 420px;
+}
+
+[data-fundo='brilho'] body {
+  background-image: radial-gradient(
+    120% 100% at 50% 0%,
+    rgb(var(--brand) / 0.24),
+    rgb(var(--brand) / 0) 70%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 480px;
+}
+
+[data-fundo='pontos'] body {
+  background-image: radial-gradient(rgb(var(--muted) / 0.2) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+[data-fundo='linhas'] body {
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgb(var(--muted) / 0.11) 0 1px,
+    transparent 1px 34px
+  );
+}
+
+[data-fundo='grao'] body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.055'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+/* amostras do seletor de fundo, na tela de aparência */
+[data-amostra='gradiente'] {
+  background-image: linear-gradient(180deg, rgb(var(--brand) / 0.4), rgb(var(--brand) / 0));
+}
+[data-amostra='brilho'] {
+  background-image: radial-gradient(90% 100% at 50% 0%, rgb(var(--brand) / 0.55), rgb(var(--brand) / 0) 72%);
+}
+[data-amostra='pontos'] {
+  background-image: radial-gradient(rgb(var(--muted) / 0.5) 1px, transparent 1px);
+  background-size: 7px 7px;
+}
+[data-amostra='linhas'] {
+  background-image: repeating-linear-gradient(180deg, rgb(var(--muted) / 0.3) 0 1px, transparent 1px 9px);
+}
+[data-amostra='grao'] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
 }
 
 /* ------------------------------------------------------------------ base --- */

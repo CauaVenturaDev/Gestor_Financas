@@ -6,13 +6,14 @@ import {
   Bell, ChevronRight, LogOut, MoreVertical, Palette, UserRound,
 } from 'lucide-react'
 import { Sheet } from '@/components/ui/Sheet'
-import { COR_DE_FUNDO, TEMAS, type TemaId } from '@/lib/theme'
-import { setTheme } from '@/server/actions/preferences'
+import { type Aparencia, TEMAS, type TemaId } from '@/lib/aparencia'
+import { MarcaSVG } from '@/components/ajustes/MarcaSVG'
+import { setAparencia } from '@/server/actions/preferences'
 import { signOutAction } from '@/server/actions/auth'
 
 const ATALHOS = [
   { href: '/app/ajustes/conta', rotulo: 'Conta', descricao: 'Nome, senha e exclusão', Icone: UserRound },
-  { href: '/app/ajustes/aparencia', rotulo: 'Aparência', descricao: 'Tema do app', Icone: Palette },
+  { href: '/app/ajustes/aparencia', rotulo: 'Aparência', descricao: 'Tema, cor, fundo e ícone', Icone: Palette, marca: true },
   { href: '/app/ajustes/notificacoes', rotulo: 'Notificações', descricao: 'Avisos por e-mail', Icone: Bell },
 ]
 
@@ -20,10 +21,10 @@ const ATALHOS = [
  * Menu do sistema, no canto do cabeçalho. Traz o troca-tema inteiro aqui dentro
  * porque é o ajuste que mais se mexe; o resto leva para a tela de ajustes.
  */
-export function MenuSistema({ tema }: { tema: TemaId }) {
+export function MenuSistema({ aparencia }: { aparencia: Aparencia }) {
   const router = useRouter()
   const [aberto, setAberto] = useState(false)
-  const [escolhido, setEscolhido] = useState<TemaId>(tema)
+  const [escolhido, setEscolhido] = useState<TemaId>(aparencia.tema)
   const [saindo, iniciarSaida] = useTransition()
   const [, iniciarTema] = useTransition()
 
@@ -32,9 +33,12 @@ export function MenuSistema({ tema }: { tema: TemaId }) {
     const raiz = document.documentElement
     if (id === 'sistema') raiz.removeAttribute('data-theme')
     else raiz.setAttribute('data-theme', id)
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', COR_DE_FUNDO[id])
+    const fundo = TEMAS.find((t) => t.id === id)?.fundo
+    if (fundo && id !== 'sistema') {
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', fundo)
+    }
     iniciarTema(() => {
-      void setTheme(id)
+      void setAparencia({ tema: id })
     })
   }
 
@@ -76,12 +80,9 @@ export function MenuSistema({ tema }: { tema: TemaId }) {
                     >
                       <span
                         aria-hidden="true"
-                        className="flex h-9 w-full overflow-hidden rounded-lg border border-line"
-                      >
-                        {t.amostra.map((cor, i) => (
-                          <span key={i} className="flex-1" style={{ background: cor }} />
-                        ))}
-                      </span>
+                        className="h-9 w-full overflow-hidden rounded-lg border border-line"
+                        style={{ background: t.fundo }}
+                      />
                       <span
                         className={`w-full truncate text-center text-xs font-medium ${
                           ativo ? 'text-brand' : 'text-muted'
@@ -97,14 +98,24 @@ export function MenuSistema({ tema }: { tema: TemaId }) {
           </section>
 
           <section className="card divide-y divide-line overflow-hidden">
-            {ATALHOS.map(({ href, rotulo, descricao, Icone }) => (
+            {ATALHOS.map(({ href, rotulo, descricao, Icone, marca }) => (
               <button
                 key={href}
                 type="button"
                 onClick={() => ir(href)}
                 className="flex w-full items-center gap-3 px-3.5 py-3 text-left active:bg-line/40"
               >
-                <Icone size={19} className="shrink-0 text-muted" />
+                {marca ? (
+                  <MarcaSVG
+                    marca={aparencia.icone}
+                    tile={aparencia.tile}
+                    cor={aparencia.cor}
+                    tamanho={22}
+                    raio="26%"
+                  />
+                ) : (
+                  <Icone size={19} className="shrink-0 text-muted" />
+                )}
                 <span className="min-w-0 flex-1">
                   <span className="block font-medium">{rotulo}</span>
                   <span className="block text-sm text-muted">{descricao}</span>

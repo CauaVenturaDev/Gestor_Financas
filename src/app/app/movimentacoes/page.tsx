@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { temaAtual } from '@/lib/theme.server'
+import { aparenciaAtual } from '@/lib/aparencia.server'
 import { MonthNav } from '@/components/MonthNav'
 import { SubNav } from '@/components/SubNav'
 import { MenuSistema } from '@/components/MenuSistema'
@@ -21,7 +21,7 @@ export default async function MovimentacoesPage({
   const ym = normalizeYm(sp.mes)
   const categoryIds = sp.cat?.split(',').filter(Boolean)
 
-  const tema = await temaAtual()
+  const aparencia = await aparenciaAtual()
 
   const [overview, itens, categorias] = await Promise.all([
     getMonthOverview(ym),
@@ -37,7 +37,7 @@ export default async function MovimentacoesPage({
       {/* cabeçalho grudado no topo: o contexto do mês nunca some ao rolar */}
       <header className="sticky top-0 z-30 -mx-4 space-y-3 bg-bg/85 px-4 pb-3 pt-safe vidro sm:top-16">
         <MonthNav ym={ym} />
-        <SubNav itens={SUBNAV_MOVIMENTACOES} acao={<MenuSistema tema={tema} />} />
+        <SubNav itens={SUBNAV_MOVIMENTACOES} acao={<MenuSistema aparencia={aparencia} />} />
       </header>
 
       <ResumoCompacto overview={overview} ym={ym} />

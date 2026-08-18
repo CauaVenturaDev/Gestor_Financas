@@ -1,20 +1,18 @@
-import { cookies } from 'next/headers'
 import type { Metadata } from 'next'
-import { SeletorTema } from '@/components/ajustes/SeletorTema'
-import { COOKIE_TEMA, TEMA_PADRAO, ehTemaValido } from '@/lib/theme'
+import { TelaAparencia } from '@/components/ajustes/TelaAparencia'
+import { aparenciaAtual } from '@/lib/aparencia.server'
 
 export const metadata: Metadata = { title: 'Aparência' }
 
 export default async function AparenciaPage() {
-  const cookie = (await cookies()).get(COOKIE_TEMA)?.value
-  const atual = ehTemaValido(cookie) ? cookie : TEMA_PADRAO
+  const inicial = await aparenciaAtual()
 
   return (
     <>
       <p className="text-sm text-muted">
-        O tema vale só neste aparelho. Em outro celular ou navegador, escolha de novo.
+        Tudo aqui vale só neste aparelho. Em outro celular ou navegador, escolha de novo.
       </p>
-      <SeletorTema atual={atual} />
+      <TelaAparencia inicial={inicial} />
     </>
   )
 }

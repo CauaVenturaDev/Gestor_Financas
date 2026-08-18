@@ -12,6 +12,6 @@ export const config = {
      * O middleware renova a sessão a cada request: é o refresh silencioso
      * que mantém o app instalado logado depois de dias fechado.
      */
-    '/((?!_next/static|_next/image|favicon.ico|icons/|manifest.webmanifest|sw.js|offline).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/icone|manifest.webmanifest|sw.js|offline).*)',
   ],
 }

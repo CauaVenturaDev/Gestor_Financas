@@ -188,19 +188,36 @@ O `db-test.sh` sobe um Postgres 16 local com um shim mínimo do Supabase
 
 Os dois rodam dentro de `begin`/`rollback` e não deixam resíduo.
 
-## Temas e ajustes
+## Aparência
 
-O app tem sete temas: **Sistema** (segue o aparelho), dois claros — Claro e
-Cinza — e quatro escuros — Escuro, Grafite, Preto puro e Índigo. Ficam em
-**⋮ > Aparência**, e o ⋮ está no canto do cabeçalho de qualquer aba.
+Em **⋮ > Aparência** o app deixa escolher quatro coisas, todas guardadas em
+cookie e aplicadas já no servidor — a página nasce com a cor certa em vez de
+piscar antes de trocar. O preço é que a escolha vale por aparelho.
+
+| O quê | Opções |
+|---|---|
+| **Tema** | Sistema, dois claros (Claro e Cinza) e quatro escuros (Escuro, Grafite, Preto puro e Índigo) |
+| **Cor** | 11 cores de destaque, cada uma com um par claro/escuro para continuar legível nos dois fundos |
+| **Fundo** | Chapado, gradiente, brilho, pontos, linhas e grão — todos usam a cor escolhida |
+| **Ícone** | 12 combinações prontas, ou monte com 10 marcas × 4 tratamentos de fundo |
 
 Um tema é só um conjunto de tokens em `src/app/globals.css`; todo componente lê
-os tokens, nunca uma cor literal, então acrescentar um tema é acrescentar um
-bloco `[data-theme='...']` lá e uma entrada em `src/lib/theme.ts`.
+os tokens, nunca uma cor literal. A cor de destaque não vira CSS: o servidor a
+injeta como `--brand-l` e `--brand-d` no `<html>`, e cada tema decide qual das
+duas usar. Assim `src/lib/aparencia.ts` é a única fonte da verdade.
 
-A escolha vive num cookie, não no banco: assim o servidor já renderiza a página
-com a cor certa e o app nunca pisca branco antes de trocar. O preço é que o tema
-é por aparelho.
+### O ícone é gerado, não é arquivo
+
+Guardar um PNG para cada combinação de marca, tratamento e cor seriam centenas
+de arquivos. Em vez disso, `/api/icone` desenha o PNG na hora a partir da
+geometria em `src/lib/icone-formas.ts` — a mesma que a pré-visualização em SVG
+usa, então o que você vê na tela é o que é instalado. A resposta é imutável e
+cacheada para sempre, já que a URL descreve a imagem inteira. O manifesto do PWA
+também é dinâmico, com as escolhas na query.
+
+**Limite do iOS:** o ícone da tela de início é gravado no momento em que o app é
+adicionado. Trocar depois não atualiza o atalho existente — é preciso remover e
+adicionar de novo. Na aba do navegador a troca aparece ao recarregar.
 
 ## Próximos passos
 
