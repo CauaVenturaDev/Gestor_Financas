@@ -6,6 +6,7 @@ import { Search, SlidersHorizontal, X } from 'lucide-react'
 import { Sheet } from '@/components/ui/Sheet'
 import { Button } from '@/components/ui/Button'
 import type { CategoryRow } from '@/lib/database.types'
+import { SEM_CATEGORIA } from '@/lib/categories'
 
 /**
  * O filtro recorta só a lista — os cards continuam refletindo o mês inteiro.
@@ -41,11 +42,19 @@ export function Filtros({ categorias }: { categorias: CategoryRow[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [busca])
 
+  // A categoria de sistema não vira chip por natureza: ela é a mesma ideia de
+  // "sem categoria" repetida três vezes. Vira um chip único, no topo.
+  const daNatureza = (n: CategoryRow['nature']) =>
+    categorias.filter((c) => c.nature === n && !c.is_system)
+
   const porNatureza = {
-    receita: categorias.filter((c) => c.nature === 'receita'),
-    despesa: categorias.filter((c) => c.nature === 'despesa'),
-    investimento: categorias.filter((c) => c.nature === 'investimento'),
+    receita: daNatureza('receita'),
+    despesa: daNatureza('despesa'),
+    investimento: daNatureza('investimento'),
   }
+
+  const alternar = (id: string) =>
+    setRascunho((r) => (r.includes(id) ? r.filter((x) => x !== id) : [...r, id]))
 
   return (
     <div className="flex items-center gap-2">
@@ -101,6 +110,19 @@ export function Filtros({ categorias }: { categorias: CategoryRow[] }) {
         }
       >
         <div className="space-y-5 pb-2">
+          <button
+            type="button"
+            onClick={() => alternar(SEM_CATEGORIA)}
+            className={`toque w-full rounded-xl border px-3.5 text-sm ${
+              rascunho.includes(SEM_CATEGORIA)
+                ? 'border-brand bg-brand/10 font-medium text-brand'
+                : 'border-line bg-surface text-muted'
+            }`}
+          >
+            Sem categoria
+            {rascunho.includes(SEM_CATEGORIA) && <X size={14} className="ml-1" />}
+          </button>
+
           {(['receita', 'despesa', 'investimento'] as const).map((nat) =>
             porNatureza[nat].length === 0 ? null : (
               <div key={nat}>
@@ -114,11 +136,7 @@ export function Filtros({ categorias }: { categorias: CategoryRow[] }) {
                       <button
                         key={c.id}
                         type="button"
-                        onClick={() =>
-                          setRascunho((r) =>
-                            marcada ? r.filter((x) => x !== c.id) : [...r, c.id],
-                          )
-                        }
+                        onClick={() => alternar(c.id)}
                         className={`toque rounded-full border px-3 text-sm ${
                           marcada
                             ? 'border-brand bg-brand/10 font-medium text-brand'

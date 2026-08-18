@@ -124,7 +124,7 @@ function EditorRegra({
   const [dia, setDia] = useState(String(regra?.day_of_month ?? 5))
   const [inicio, setInicio] = useState(regra ? ymOf(regra.start_date) : currentYm())
   const [fim, setFim] = useState(regra?.end_date ? ymOf(regra.end_date) : '')
-  const [categoria, setCategoria] = useState(regra?.category_id ?? '')
+  const [categoria, setCategoria] = useState(idDeCategoria(regra?.category_id ?? null, categorias))
   const [observacao, setObservacao] = useState(regra?.note ?? '')
 
   // remonta o formulário sempre que a regra em edição muda
@@ -139,12 +139,12 @@ function EditorRegra({
     setDia(String(regra?.day_of_month ?? 5))
     setInicio(regra ? ymOf(regra.start_date) : currentYm())
     setFim(regra?.end_date ? ymOf(regra.end_date) : '')
-    setCategoria(regra?.category_id ?? '')
+    setCategoria(idDeCategoria(regra?.category_id ?? null, categorias))
     setObservacao(regra?.note ?? '')
     setErros({})
   }
 
-  const doTipo = categorias.filter((c) => c.nature === kind && !c.is_archived)
+  const doTipo = categorias.filter((c) => c.nature === kind && !c.is_archived && !c.is_system)
 
   const salvar = () =>
     iniciar(async () => {
@@ -423,4 +423,10 @@ function ExcluirRegra({ item, aoFechar }: { item: RuleItem | null; aoFechar: () 
       <div className="pb-1" />
     </Sheet>
   )
+}
+
+/** Mesma regra do formulário de lançamento: a categoria de sistema é a opção vazia. */
+function idDeCategoria(id: string | null, categorias: CategoryRow[]): string {
+  if (!id) return ''
+  return categorias.find((c) => c.id === id)?.is_system ? '' : id
 }

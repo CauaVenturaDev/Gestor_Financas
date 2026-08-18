@@ -2,6 +2,7 @@ import 'server-only'
 
 import { createClient } from '@/lib/supabase/server'
 import { addMonthsToYm, currentYm, ymToFirstDay, ymToLastDay } from '@/lib/date'
+import { SEM_CATEGORIA } from '@/lib/categories'
 import type {
   BankRow,
   CardInstallmentRow,
@@ -71,6 +72,7 @@ export interface TxItem extends TransactionRow {
 /** Lista de lançamentos do mês. O filtro recorta a lista, nunca os cards. */
 export async function listTransactions(f: TxFilters): Promise<TxItem[]> {
   const supabase = await createClient()
+  const catalogo = await categoryIndex()
 
   let query = supabase
     .from('transactions')
@@ -83,20 +85,61 @@ export async function listTransactions(f: TxFilters): Promise<TxItem[]> {
     .limit(500)
 
   if (f.kind) query = query.eq('kind', f.kind)
-  if (f.categoryIds?.length) query = query.in('category_id', f.categoryIds)
   if (f.q?.trim()) query = query.ilike('name', `%${sanitizeLike(f.q)}%`)
+
+  if (f.categoryIds?.length) {
+    const escolhidas = f.categoryIds.filter((id) => id !== SEM_CATEGORIA)
+    const querSemCategoria = escolhidas.length !== f.categoryIds.length
+
+    if (querSemCategoria) {
+      // O chip "Sem categoria" precisa trazer as duas formas: category_id nulo
+      // e as categorias de sistema, destino da reatribuição da RN14.
+      const sistemas = [...catalogo]
+        .filter(([, c]) => c.isSystem)
+        .map(([id]) => id)
+      const ids = [...escolhidas, ...sistemas]
+      query = query.or(
+        ids.length ? `category_id.is.null,category_id.in.(${ids.join(',')})` : 'category_id.is.null',
+      )
+    } else if (escolhidas.length) {
+      query = query.in('category_id', escolhidas)
+    }
+  }
 
   const { data } = await query
   const rows = (data ?? []) as TransactionRow[]
-  const nomes = await categoryNameMap()
-  return rows.map((r) => ({ ...r, categoryName: r.category_id ? nomes.get(r.category_id) ?? null : null }))
+  return rows.map((r) => ({ ...r, categoryName: categoryLabel(r.category_id, catalogo) }))
+}
+
+interface CategoriaResumo {
+  name: string
+  isSystem: boolean
 }
 
 /** Categorias em memória: no máximo 200 por usuário (premissa 12). */
-async function categoryNameMap(): Promise<Map<string, string>> {
+async function categoryIndex(): Promise<Map<string, CategoriaResumo>> {
   const supabase = await createClient()
-  const { data } = await supabase.from('categories').select('id, name').is('deleted_at', null)
-  return new Map(((data ?? []) as Pick<CategoryRow, 'id' | 'name'>[]).map((c) => [c.id, c.name]))
+  const { data } = await supabase
+    .from('categories')
+    .select('id, name, is_system')
+    .is('deleted_at', null)
+
+  return new Map(
+    ((data ?? []) as Pick<CategoryRow, 'id' | 'name' | 'is_system'>[]).map((c) => [
+      c.id,
+      { name: c.name, isSystem: c.is_system },
+    ]),
+  )
+}
+
+/**
+ * A categoria de sistema é a ausência de categoria, não uma categoria de
+ * verdade: some do rótulo para a lista não repetir "Sem categoria" em todo item.
+ */
+function categoryLabel(id: string | null, catalogo: Map<string, CategoriaResumo>): string | null {
+  if (!id) return null
+  const c = catalogo.get(id)
+  return !c || c.isSystem ? null : c.name
 }
 
 export async function listCategories(opts?: {
@@ -151,7 +194,7 @@ export async function listRecurrences(): Promise<RuleItem[]> {
   const rows = (data ?? []) as RecurrenceRow[]
   if (rows.length === 0) return []
 
-  const nomes = await categoryNameMap()
+  const catalogo = await categoryIndex()
   const { data: prox } = await supabase
     .from('transactions')
     .select('recurrence_id, date')
@@ -167,7 +210,7 @@ export async function listRecurrences(): Promise<RuleItem[]> {
 
   return rows.map((r) => ({
     ...r,
-    categoryName: r.category_id ? nomes.get(r.category_id) ?? null : null,
+    categoryName: categoryLabel(r.category_id, catalogo),
     nextOccurrence: proxMap.get(r.id) ?? null,
   }))
 }

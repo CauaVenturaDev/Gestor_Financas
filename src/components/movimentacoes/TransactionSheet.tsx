@@ -83,6 +83,10 @@ export function TransactionSheet({ aberto, aoFechar, kind, categorias, transacao
     if (repete) setInicio(ymOf(data))
   }, [repete, data])
 
+  // A categoria de sistema é dobrada na opção vazia, tanto no que aparece
+  // selecionado quanto no que é gravado.
+  const categoriaSelecionada = idDeCategoria(categoria, categorias)
+
   const salvar = () =>
     iniciar(async () => {
       setErros({})
@@ -91,7 +95,7 @@ export function TransactionSheet({ aberto, aoFechar, kind, categorias, transacao
         const res = await createRecurrence({
           kind: kind as 'receita' | 'despesa',
           name: nome,
-          categoryId: categoria || null,
+          categoryId: categoriaSelecionada || null,
           amountCents: valorVariavel ? null : valor,
           dayOfMonth: Number(dia),
           startYm: inicio,
@@ -115,7 +119,7 @@ export function TransactionSheet({ aberto, aoFechar, kind, categorias, transacao
             name: nome,
             date: data,
             amountCents: valor,
-            categoryId: categoria || null,
+            categoryId: categoriaSelecionada || null,
             note: observacao || null,
             scope: escopo,
           })
@@ -124,7 +128,7 @@ export function TransactionSheet({ aberto, aoFechar, kind, categorias, transacao
             name: nome,
             date: data,
             amountCents: valor,
-            categoryId: categoria || null,
+            categoryId: categoriaSelecionada || null,
             note: observacao || null,
           })
 
@@ -195,15 +199,17 @@ export function TransactionSheet({ aberto, aoFechar, kind, categorias, transacao
           <select
             id="tx-categoria"
             className="campo"
-            value={categoria}
+            value={categoriaSelecionada}
             onChange={(e) => setCategoria(e.target.value)}
           >
             <option value="">Sem categoria</option>
-            {categorias.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
+            {categorias
+              .filter((c) => !c.is_system)
+              .map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
           </select>
         </Field>
 
@@ -313,4 +319,14 @@ export function TransactionSheet({ aberto, aoFechar, kind, categorias, transacao
       </div>
     </Sheet>
   )
+}
+
+/**
+ * A opção vazia do select já é o "Sem categoria". A categoria de sistema de
+ * mesmo nome existe no banco só como destino da reatribuição (RN14), então ela
+ * é dobrada na opção vazia em vez de virar uma segunda linha na lista.
+ */
+function idDeCategoria(id: string | null, categorias: CategoryRow[]): string {
+  if (!id) return ''
+  return categorias.find((c) => c.id === id)?.is_system ? '' : id
 }
