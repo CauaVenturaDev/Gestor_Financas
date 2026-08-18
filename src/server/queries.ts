@@ -375,8 +375,13 @@ export async function getCategoryBreakdown(ym: string, incluirPrevistos = false)
     p_ym: ymToFirstDay(ym),
     p_incluir_previstos: incluirPrevistos,
   })
-  if (error || !data) return {}
-  return data as unknown as Breakdown
+  if (error) {
+    // Vazio silencioso aqui viraria "meu relatório não tem nada", que manda o
+    // usuário procurar o problema no lugar errado.
+    console.error('category_breakdown falhou:', error.code, error.message)
+    return {}
+  }
+  return (data ?? {}) as unknown as Breakdown
 }
 
 export async function getProfile() {

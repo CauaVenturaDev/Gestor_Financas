@@ -44,6 +44,17 @@ export function fromPostgrest(error: PostgrestError): ActionResult<never> {
       return fail('NOT_FOUND', 'Item não encontrado.')
     case 'PGRST116':
       return fail('NOT_FOUND', 'Item não encontrado.')
+    // O esquema do banco está atrás do código: falta aplicar alguma migração.
+    // Sem esta tradução, o usuário recebe o erro cru do PostgREST, em inglês,
+    // e não tem como saber que o problema não é o que ele digitou.
+    case 'PGRST202':
+    case 'PGRST204':
+    case 'PGRST205':
+      return fail(
+        'UNKNOWN',
+        'Este recurso precisa de uma atualização do banco que ainda não foi aplicada. ' +
+          'Rode as migrações pendentes em supabase/migrations no SQL Editor do Supabase.',
+      )
     default:
       return fail('UNKNOWN', error.message || 'Não foi possível concluir a operação.')
   }
