@@ -21,6 +21,9 @@ export type ProfileRow = {
   notify_email: boolean
   notify_time: string
   notify_days_before: number
+  ensured_from: string | null
+  ensured_through: string | null
+  effectuated_on: string | null
 }
 
 export type CategoryRow = {
@@ -183,6 +186,7 @@ export interface Database {
         Returns: Json
       }
       month_page: { Args: { p_ym: string; p_com_quebra?: boolean }; Returns: Json }
+      invalidate_ensured: { Args: Record<string, never>; Returns: never }
     }
     Enums: {
       kind_t: Kind

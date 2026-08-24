@@ -18,9 +18,14 @@ function revalidar() {
 
 const NATUREZA_DE: Record<string, Nature> = { receita: 'receita', despesa: 'despesa' }
 
-/** Depois de mexer na regra, materializa o mês corrente e o seguinte. */
+/**
+ * Depois de mexer na regra, materializa o mês corrente e o seguinte — e
+ * invalida a faixa já materializada, senão a regra nova não apareceria nos
+ * meses que o usuário já visitou.
+ */
 async function materializar() {
   const supabase = await createClient()
+  await supabase.rpc('invalidate_ensured')
   await supabase.rpc('ensure_occurrences', {
     p_start_ym: ymToFirstDay(currentYm()),
     p_end_ym: ymToFirstDay(addMonthsToYm(currentYm(), 1)),
@@ -60,6 +65,8 @@ export async function createRecurrence(
     .single()
 
   if (error) return fromPostgrest(error)
+
+  await supabase.rpc('invalidate_ensured')
 
   // Gera do início da regra (ou do mês corrente, o que for mais recente) até M+1.
   const inicio = v.startYm < currentYm() ? v.startYm : currentYm()
@@ -164,6 +171,7 @@ export async function deleteRecurrence(id: string): Promise<ActionResult> {
   const supabase = await createClient()
 
   await supabase.rpc('purge_future_occurrences', { p_recurrence: id, p_from: todayISO() })
+  await supabase.rpc('invalidate_ensured')
 
   const { error } = await supabase
     .from('recurrences')
