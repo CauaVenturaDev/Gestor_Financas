@@ -1,0 +1,335 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------- tokens --- */
+/*
+ * Um tema é só um conjunto de tokens. Todo componente lê os tokens, nunca uma
+ * cor literal, então acrescentar um tema é acrescentar um bloco aqui.
+ *
+ * "Sistema" é a ausência de data-theme: aí quem decide é o prefers-color-scheme.
+ * Qualquer outro valor ganha do sistema operacional, nas duas direções.
+ */
+:root,
+[data-theme='claro'] {
+  color-scheme: light;
+  --bg: 247 248 250;
+  --surface: 255 255 255;
+  --elevated: 255 255 255;
+  --line: 226 230 237;
+  --ink: 16 22 33;
+  --muted: 91 102 122;
+  --faint: 141 152 170;
+  /* par da cor de destaque; o servidor sobrescreve os dois inline */
+  --brand-l: 37 78 210;
+  --brand-d: 116 152 255;
+  --brand-ink-l: 255 255 255;
+  --brand-ink-d: 10 13 20;
+  --brand: var(--brand-l);
+  --brand-ink: var(--brand-ink-l);
+  --receita: 14 133 92;
+  --despesa: 199 48 63;
+  --investimento: 96 62 194;
+  --alerta: 178 96 8;
+}
+
+/* Claro de contraste menor, para uso prolongado e para tela em luz forte. */
+[data-theme='cinza'] {
+  color-scheme: light;
+  --bg: 235 238 243;
+  --surface: 253 253 255;
+  --elevated: 255 255 255;
+  --line: 213 219 229;
+  --ink: 24 29 39;
+  --muted: 88 98 116;
+  --faint: 133 143 161;
+  --brand: var(--brand-l);
+  --brand-ink: var(--brand-ink-l);
+  --receita: 13 124 86;
+  --despesa: 187 44 58;
+  --investimento: 89 57 182;
+  --alerta: 166 89 7;
+}
+
+/* Escuro padrão: azulado, o mesmo que o app já usava. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: 10 13 20;
+    --surface: 20 25 35;
+    --elevated: 27 33 45;
+    --line: 43 51 66;
+    --ink: 236 240 246;
+    --muted: 154 165 184;
+    --faint: 116 128 148;
+    --brand: var(--brand-d);
+    --brand-ink: var(--brand-ink-d);
+    --receita: 60 200 145;
+    --despesa: 255 118 130;
+    --investimento: 172 146 255;
+    --alerta: 240 176 74;
+  }
+}
+
+[data-theme='escuro'] {
+  color-scheme: dark;
+  --bg: 10 13 20;
+  --surface: 20 25 35;
+  --elevated: 27 33 45;
+  --line: 43 51 66;
+  --ink: 236 240 246;
+  --muted: 154 165 184;
+  --faint: 116 128 148;
+  --brand: var(--brand-d);
+  --brand-ink: var(--brand-ink-d);
+  --receita: 60 200 145;
+  --despesa: 255 118 130;
+  --investimento: 172 146 255;
+  --alerta: 240 176 74;
+}
+
+/* Escuro neutro, sem o viés azul. */
+[data-theme='grafite'] {
+  color-scheme: dark;
+  --bg: 18 18 19;
+  --surface: 29 29 31;
+  --elevated: 38 38 41;
+  --line: 57 57 61;
+  --ink: 235 235 237;
+  --muted: 161 161 167;
+  --faint: 123 123 130;
+  --brand: var(--brand-d);
+  --brand-ink: var(--brand-ink-d);
+  --receita: 76 202 152;
+  --despesa: 255 124 130;
+  --investimento: 181 156 255;
+  --alerta: 237 178 82;
+}
+
+/* Preto puro: no OLED do iPhone o pixel apagado não consome bateria. */
+[data-theme='oled'] {
+  color-scheme: dark;
+  --bg: 0 0 0;
+  --surface: 12 12 14;
+  --elevated: 21 21 24;
+  --line: 44 44 49;
+  --ink: 242 242 246;
+  --muted: 158 158 166;
+  --faint: 118 118 127;
+  --brand: var(--brand-d);
+  --brand-ink: var(--brand-ink-d);
+  --receita: 62 206 150;
+  --despesa: 255 118 128;
+  --investimento: 177 150 255;
+  --alerta: 242 180 78;
+}
+
+/* Noturno de contraste alto, com fundo índigo. */
+[data-theme='indigo'] {
+  color-scheme: dark;
+  --bg: 13 14 30;
+  --surface: 24 26 48;
+  --elevated: 33 35 61;
+  --line: 51 54 86;
+  --ink: 232 234 249;
+  --muted: 159 165 199;
+  --faint: 121 127 162;
+  --brand: var(--brand-d);
+  --brand-ink: var(--brand-ink-d);
+  --receita: 76 208 162;
+  --despesa: 255 130 146;
+  --investimento: 189 163 255;
+  --alerta: 245 186 90;
+}
+
+/* ----------------------------------------------------------------- fundo --- */
+/*
+ * O fundo é uma camada de imagem no próprio body, não um pseudo-elemento fixo:
+ * assim não cria contexto de empilhamento e não briga com a barra inferior,
+ * com o FAB nem com os painéis. Todas usam a cor de destaque escolhida.
+ */
+[data-fundo='gradiente'] body {
+  background-image: linear-gradient(180deg, rgb(var(--brand) / 0.14), rgb(var(--brand) / 0));
+  background-repeat: no-repeat;
+  background-size: 100% 420px;
+}
+
+[data-fundo='brilho'] body {
+  background-image: radial-gradient(
+    120% 100% at 50% 0%,
+    rgb(var(--brand) / 0.24),
+    rgb(var(--brand) / 0) 70%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 480px;
+}
+
+[data-fundo='pontos'] body {
+  background-image: radial-gradient(rgb(var(--muted) / 0.2) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+[data-fundo='linhas'] body {
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgb(var(--muted) / 0.11) 0 1px,
+    transparent 1px 34px
+  );
+}
+
+[data-fundo='grao'] body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.055'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+/* amostras do seletor de fundo, na tela de aparência */
+[data-amostra='gradiente'] {
+  background-image: linear-gradient(180deg, rgb(var(--brand) / 0.4), rgb(var(--brand) / 0));
+}
+[data-amostra='brilho'] {
+  background-image: radial-gradient(90% 100% at 50% 0%, rgb(var(--brand) / 0.55), rgb(var(--brand) / 0) 72%);
+}
+[data-amostra='pontos'] {
+  background-image: radial-gradient(rgb(var(--muted) / 0.5) 1px, transparent 1px);
+  background-size: 7px 7px;
+}
+[data-amostra='linhas'] {
+  background-image: repeating-linear-gradient(180deg, rgb(var(--muted) / 0.3) 0 1px, transparent 1px 9px);
+}
+[data-amostra='grao'] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------------------------------ base --- */
+@layer base {
+  html {
+    /* 9. Safari não infla a fonte ao girar a tela */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg text-ink font-sans antialiased;
+    /* 8. o arraste não puxa a página de trás nem dispara o refresh por gesto */
+    overscroll-behavior-y: none;
+  }
+
+  /* 4. abaixo de 16px o Safari dá zoom ao focar e desalinha o layout */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* 10. sem atraso de 300ms e sem zoom por toque duplo */
+  button,
+  [role='button'],
+  a,
+  input,
+  select,
+  textarea,
+  label {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-bg;
+  }
+
+  /* 15. respeita quem pediu menos movimento */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ------------------------------------------------------------ componentes --- */
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-surface;
+  }
+
+  .campo {
+    @apply w-full rounded-xl border border-line bg-surface px-3 py-3 text-ink
+           placeholder:text-faint focus:border-brand focus:outline-none
+           focus:ring-2 focus:ring-brand/25 disabled:opacity-50;
+    min-height: 48px; /* alvo de toque de 44pt com folga */
+  }
+
+  .rotulo {
+    @apply mb-1.5 block text-sm font-medium text-muted;
+  }
+
+  .erro-campo {
+    @apply mt-1.5 block text-sm text-despesa;
+  }
+
+  /* alvo mínimo de toque de 44x44pt (padrão Apple) */
+  .toque {
+    @apply inline-flex items-center justify-center;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+}
+
+/* ---------------------------------------------------------------- utils --- */
+@layer utilities {
+  /* 3. 100vh puro no Safari iOS ignora a barra de endereço e corta o conteúdo */
+  .h-dvh {
+    height: 100vh;
+    height: -webkit-fill-available;
+    height: 100dvh;
+  }
+
+  .min-h-dvh {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    min-height: 100dvh;
+  }
+
+  /* 8. rolagem suave em iOS e sem "pull to refresh" dentro do painel */
+  .rolagem {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* 2. nada embaixo da barra de gestos nem do notch */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+  .px-safe {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+
+  .sem-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .sem-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .vidro {
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+  }
+}
