@@ -1,7 +1,9 @@
 import 'server-only'
 
-import { createClient } from '@/lib/supabase/server'
-import { addMonthsToYm, currentYm, ymToFirstDay, ymToLastDay } from '@/lib/date'
+import { cache } from 'react'
+
+import { createClient, getUser } from '@/lib/supabase/server'
+import { currentYm, ymToFirstDay, ymToLastDay } from '@/lib/date'
 import { SEM_CATEGORIA } from '@/lib/categories'
 import type {
   BankRow,
@@ -39,23 +41,63 @@ const TOTAIS_ZERO: Totais = {
   lucro: 0, saldoMes: 0, saldoAcumulado: 0,
 }
 
+export interface GrupoCategoria {
+  nome: string
+  totalCents: number
+}
+
+export type Breakdown = Partial<Record<Kind, GrupoCategoria[]>>
+
+/** Quebra por categoria do mês, para a aba Relatório. */
+export async function getCategoryBreakdown(ym: string, incluirPrevistos = false): Promise<Breakdown> {
+  const supabase = await createClient()
+  const { data, error } = await supabase.rpc('category_breakdown', {
+    p_ym: ymToFirstDay(ym),
+    p_incluir_previstos: incluirPrevistos,
+  })
+  if (error) {
+    // Vazio silencioso aqui viraria "meu relatório não tem nada", que manda o
+    // usuário procurar o problema no lugar errado.
+    console.error('category_breakdown falhou:', error.code, error.message)
+    return {}
+  }
+  return (data ?? {}) as unknown as Breakdown
+}
+
+export interface VisaoDoMes extends MonthOverview {
+  quebraRealizado?: Breakdown
+  quebraProjetado?: Breakdown
+}
+
 /**
- * Visão do mês. Garante antes as ocorrências recorrentes de M e M+1, para a
- * tela ficar consistente mesmo se o cron diário falhar (seção 5.1, caminho 1).
+ * Monta a tela do mês numa ida só ao banco.
+ *
+ * A função no banco garante as ocorrências recorrentes de M e M+1, soma os
+ * totais e, quando pedido, devolve também a quebra por categoria. Fazer isso em
+ * chamadas separadas custava quatro viagens de rede em sequência — e é a viagem
+ * que pesa na navegação, não a consulta.
  */
-export async function getMonthOverview(ym: string): Promise<MonthOverview> {
+export async function getVisaoDoMes(ym: string, comQuebra = false): Promise<VisaoDoMes> {
   const supabase = await createClient()
 
-  await supabase.rpc('ensure_occurrences', {
-    p_start_ym: ymToFirstDay(ym),
-    p_end_ym: ymToFirstDay(addMonthsToYm(ym, 1)),
+  const { data, error } = await supabase.rpc('month_page', {
+    p_ym: ymToFirstDay(ym),
+    p_com_quebra: comQuebra,
   })
 
-  const { data, error } = await supabase.rpc('month_overview', { p_ym: ymToFirstDay(ym) })
   if (error || !data) {
-    return { ym, realizado: TOTAIS_ZERO, projetado: TOTAIS_ZERO, saldoAnterior: 0, patrimonio: 0, comprometidoCartao: 0 }
+    console.error('month_page falhou:', error?.code, error?.message)
+    return {
+      ym,
+      realizado: TOTAIS_ZERO,
+      projetado: TOTAIS_ZERO,
+      saldoAnterior: 0,
+      patrimonio: 0,
+      comprometidoCartao: 0,
+    }
   }
-  return data as unknown as MonthOverview
+
+  return data as unknown as VisaoDoMes
 }
 
 export interface TxFilters {
@@ -361,36 +403,13 @@ export async function getProjection(monthsAhead = 12): Promise<ProjectionMonth[]
   return data as unknown as ProjectionMonth[]
 }
 
-export interface GrupoCategoria {
-  nome: string
-  totalCents: number
-}
-
-export type Breakdown = Partial<Record<Kind, GrupoCategoria[]>>
-
-/** Quebra por categoria do mês, para a aba Relatório. */
-export async function getCategoryBreakdown(ym: string, incluirPrevistos = false): Promise<Breakdown> {
+export const getProfile = cache(async () => {
   const supabase = await createClient()
-  const { data, error } = await supabase.rpc('category_breakdown', {
-    p_ym: ymToFirstDay(ym),
-    p_incluir_previstos: incluirPrevistos,
-  })
-  if (error) {
-    // Vazio silencioso aqui viraria "meu relatório não tem nada", que manda o
-    // usuário procurar o problema no lugar errado.
-    console.error('category_breakdown falhou:', error.code, error.message)
-    return {}
-  }
-  return (data ?? {}) as unknown as Breakdown
-}
-
-export async function getProfile() {
-  const supabase = await createClient()
-  const { data: auth } = await supabase.auth.getUser()
-  if (!auth.user) return null
-  const { data } = await supabase.from('profiles').select('*').eq('id', auth.user.id).maybeSingle()
-  return { user: auth.user, profile: data }
-}
+  const user = await getUser()
+  if (!user) return null
+  const { data } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+  return { user, profile: data }
+})
 
 /** Parcelas em aberto por banco: trava a exclusão do banco. */
 export async function openInstallmentsByBank(): Promise<Map<string, number>> {

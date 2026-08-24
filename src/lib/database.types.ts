@@ -182,6 +182,7 @@ export interface Database {
         Args: { p_ym: string; p_incluir_previstos?: boolean }
         Returns: Json
       }
+      month_page: { Args: { p_ym: string; p_com_quebra?: boolean }; Returns: Json }
     }
     Enums: {
       kind_t: Kind

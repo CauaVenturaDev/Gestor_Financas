@@ -4,6 +4,13 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   experimental: {
     serverActions: { bodySizeLimit: '1mb' },
+    /*
+     * Guarda o resultado das rotas dinâmicas no roteador do cliente por meio
+     * minuto. Voltar para uma aba recém-visitada passa a ser instantâneo, sem
+     * ida ao servidor. As gravações continuam corretas: toda action chama
+     * revalidatePath('/app'), que descarta esse cache na hora.
+     */
+    staleTimes: { dynamic: 30, static: 180 },
   },
   async redirects() {
     return [

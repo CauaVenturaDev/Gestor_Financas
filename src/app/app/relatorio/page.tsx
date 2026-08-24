@@ -4,7 +4,7 @@ import { MonthNav } from '@/components/MonthNav'
 import { SubNav } from '@/components/SubNav'
 import { MenuSistema } from '@/components/MenuSistema'
 import { TelaRelatorio } from '@/components/relatorio/TelaRelatorio'
-import { getCategoryBreakdown, getMonthOverview, normalizeYm } from '@/server/queries'
+import { getVisaoDoMes, normalizeYm } from '@/server/queries'
 import { SUBNAV_RELATORIO } from '@/app/app/movimentacoes/subnav'
 
 export const metadata: Metadata = { title: 'Relatório' }
@@ -19,11 +19,7 @@ export default async function RelatorioPage({
 
   const aparencia = await aparenciaAtual()
 
-  const [overview, realizado, projetado] = await Promise.all([
-    getMonthOverview(ym),
-    getCategoryBreakdown(ym, false),
-    getCategoryBreakdown(ym, true),
-  ])
+  const visao = await getVisaoDoMes(ym, true)
 
   return (
     <div className="space-y-5 px-4 pt-3">
@@ -32,7 +28,11 @@ export default async function RelatorioPage({
         <SubNav itens={SUBNAV_RELATORIO} acao={<MenuSistema aparencia={aparencia} />} />
       </header>
 
-      <TelaRelatorio overview={overview} realizado={realizado} projetado={projetado} />
+      <TelaRelatorio
+        overview={visao}
+        realizado={visao.quebraRealizado ?? {}}
+        projetado={visao.quebraProjetado ?? {}}
+      />
     </div>
   )
 }

@@ -2,16 +2,16 @@ import { redirect } from 'next/navigation'
 import { TabBar, TopNav } from '@/components/TabBar'
 import { AppRefresher } from '@/components/AppRefresher'
 import { InstallHint } from '@/components/InstallHint'
-import { getProfile } from '@/server/queries'
+import { getUser } from '@/lib/supabase/server'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const dados = await getProfile()
-  if (!dados) redirect('/entrar')
+  // O nome sai do metadata da sessão, que já veio junto com a autenticação.
+  // Consultar profiles aqui custaria uma ida de rede a mais em toda navegação
+  // que revalida o layout, e o nome é a única coisa que o cabeçalho usa.
+  const user = await getUser()
+  if (!user) redirect('/entrar')
 
-  const nome =
-    dados.profile?.display_name ??
-    (dados.user.user_metadata?.display_name as string | undefined) ??
-    null
+  const nome = (user.user_metadata?.display_name as string | undefined) ?? null
 
   return (
     <div className="min-h-dvh px-safe">

@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { supabaseAnonKey, supabaseUrl } from '@/lib/env'
@@ -28,9 +29,13 @@ export async function createClient() {
   })
 }
 
-/** Usuário autenticado ou null. Valida no servidor de auth, não confia no cookie. */
-export async function getUser() {
+/**
+ * Usuário autenticado ou null. Valida no servidor de auth, não confia no
+ * cookie — e é uma ida de rede, então fica memorizado por request: layout,
+ * página e ações compartilham a mesma resposta em vez de perguntar de novo.
+ */
+export const getUser = cache(async () => {
   const supabase = await createClient()
   const { data } = await supabase.auth.getUser()
   return data.user ?? null
-}
+})

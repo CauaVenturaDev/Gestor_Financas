@@ -7,7 +7,7 @@ import { ResumoCompacto } from '@/components/movimentacoes/ResumoCompacto'
 import { SecaoLancamentos } from '@/components/movimentacoes/SecaoLancamentos'
 import { Filtros } from '@/components/movimentacoes/Filtros'
 import { FabNovoLancamento } from '@/components/movimentacoes/FabNovoLancamento'
-import { getMonthOverview, listCategories, listTransactions, normalizeYm } from '@/server/queries'
+import { getVisaoDoMes, listCategories, listTransactions, normalizeYm } from '@/server/queries'
 import { SUBNAV_MOVIMENTACOES } from '@/app/app/movimentacoes/subnav'
 
 export const metadata: Metadata = { title: 'Lançamentos' }
@@ -24,7 +24,7 @@ export default async function MovimentacoesPage({
   const aparencia = await aparenciaAtual()
 
   const [overview, itens, categorias] = await Promise.all([
-    getMonthOverview(ym),
+    getVisaoDoMes(ym),
     listTransactions({ ym, categoryIds, q: sp.q }),
     listCategories({ includeArchived: true }),
   ])
